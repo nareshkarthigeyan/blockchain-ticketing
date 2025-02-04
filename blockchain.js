@@ -57,7 +57,7 @@ class Blockchain {
 
   addBlockToChain(newBlock) {
     newBlock.prevHash = this.getLatestBlock().hash;
-    newBlock.mineBlock(); // Mine the block before adding it to the chain
+    newBlock.mineBlock();
     this.chain.push(newBlock);
   }
 
@@ -119,6 +119,70 @@ generateTicketBlock(
   "654321",
   "9123456789",
   "TICKET456"
+);
+generateTicketBlock(
+  "Naresh",
+  "naresh@example.com",
+  "VIP",
+  "123456",
+  "9876543210",
+  "TICKET123"
+);
+generateTicketBlock(
+  "Naresh",
+  "naresh@example.com",
+  "VIP",
+  "123456",
+  "9876543210",
+  "TICKET123"
+);
+generateTicketBlock(
+  "Naresh",
+  "naresh@example.com",
+  "VIP",
+  "123456",
+  "9876543210",
+  "TICKET123"
+);
+generateTicketBlock(
+  "Naresh",
+  "naresh@example.com",
+  "VIP",
+  "123456",
+  "9876543210",
+  "TICKET123"
+);
+generateTicketBlock(
+  "Naresh",
+  "naresh@example.com",
+  "VIP",
+  "123456",
+  "9876543210",
+  "TICKET123"
+);
+generateTicketBlock(
+  "Naresh",
+  "naresh@example.com",
+  "VIP",
+  "123456",
+  "9876543210",
+  "TICKET123"
+);
+generateTicketBlock(
+  "Naresh",
+  "naresh@example.com",
+  "VIP",
+  "123456",
+  "9876543210",
+  "TICKET123"
+);
+generateTicketBlock(
+  "Naresh",
+  "naresh@example.com",
+  "VIP",
+  "123456",
+  "9876543210",
+  "TICKET123"
 );
 
 console.log("\nBlockchain:", JSON.stringify(ticketChain, null, 4));
