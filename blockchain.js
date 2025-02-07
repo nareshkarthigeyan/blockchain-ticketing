@@ -1,6 +1,5 @@
 const sqlite3 = require("sqlite3").verbose();
 const crypto = require("crypto");
-const readline = require("readline");
 
 const db = new sqlite3.Database("blockchain.db", (err) => {
   if (err) console.error("Error opening DB:", err);
@@ -234,21 +233,20 @@ async function generateTicketBlock(
   }
 }
 
-(async function () {
-  await generateTicketBlock(
-    "Naresh",
-    "naresh@example.com",
-    "VIP",
-    "123456",
-    "9876543210",
-    "TICKET123"
-  );
+// (async function () {
+//   await generateTicketBlock(
+//     "Naresh",
+//     "naresh@example.com",
+//     "VIP",
+//     "123456",
+//     "9876543210",
+//     "TICKET123"
+//   );
 
-
-  console.log("\nBlockchain:", JSON.stringify(ticketChain, null, 4));
-  const valid = await ticketChain.isValid();
-  console.log("\nBlockchain valid:", valid);
-})();
+//   console.log("\nBlockchain:", JSON.stringify(ticketChain, null, 4));
+//   const valid = await ticketChain.isValid();
+//   console.log("\nBlockchain valid:", valid);
+// })();
 
 function printAllBlocks() {
   db.all("SELECT * FROM blocks ORDER BY blockIndex ASC", (err, rows) => {
@@ -271,3 +269,6 @@ function printAllBlocks() {
 }
 
 setTimeout(printAllBlocks, 2000);
+
+module.exports = { generateTicketBlock };
+
