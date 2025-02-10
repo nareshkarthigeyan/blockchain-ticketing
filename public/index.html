@@ -44,8 +44,18 @@
     <p id="responseMessage"></p>
 
     <script>
-        // Update server URL to use port 5001
-        const SERVER_URL = "http://localhost:5001";
+        // First test if server is reachable
+        async function testServerConnection() {
+            try {
+                const response = await fetch('http://localhost:5001/test');
+                const data = await response.json();
+                console.log('Server test successful:', data);
+                return true;
+            } catch (error) {
+                console.error('Server test failed:', error);
+                return false;
+            }
+        }
 
         document.getElementById("ticketForm").addEventListener("submit", async function(event) {
             event.preventDefault();
@@ -53,11 +63,22 @@
             const submitButton = this.querySelector('button[type="submit"]');
             const responseMessage = document.getElementById("responseMessage");
             
-            // Disable button and show loading state
             submitButton.disabled = true;
             submitButton.innerText = "Processing...";
-            responseMessage.innerText = "Connecting to server...";
+            responseMessage.innerText = "Testing server connection...";
             responseMessage.style.color = "black";
+
+            // Test server connection first
+            const isServerConnected = await testServerConnection();
+            if (!isServerConnected) {
+                responseMessage.style.color = "red";
+                responseMessage.innerText = "❌ Server is not reachable. Please check if the server is running on port 5001";
+                submitButton.disabled = false;
+                submitButton.innerText = "Submit";
+                return;
+            }
+
+            responseMessage.innerText = "Sending data...";
 
             const formData = {
                 name: document.getElementById("name").value,
@@ -69,36 +90,30 @@
             };
 
             try {
-                console.log("Attempting to connect to:", `${SERVER_URL}/api/add-transaction`);
-                console.log("Sending data:", formData);
-                
-                const response = await fetch(`${SERVER_URL}/api/add-transaction`, {
-                    method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json",
-                        // Add CORS headers if needed
-                        "Access-Control-Allow-Origin": "*"
+                const response = await fetch('http://localhost:5001/api/add-transaction', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(formData)
                 });
 
-                console.log("Response received:", response);
+                console.log('Response status:', response.status);
                 const data = await response.json();
-                console.log("Response data:", data);
-                
-                if (response.ok) {
+                console.log('Response data:', data);
+
+                if (data.success) {
                     responseMessage.style.color = "green";
                     responseMessage.innerText = "✅ Transaction added to blockchain!";
                 } else {
                     responseMessage.style.color = "red";
-                    responseMessage.innerText = `❌ Error: ${data.error}`;
+                    responseMessage.innerText = `❌ Error: ${data.error || 'Unknown error occurred'}`;
                 }
             } catch (error) {
-                console.error("Connection error:", error);
+                console.error('Error details:', error);
                 responseMessage.style.color = "red";
-                responseMessage.innerText = "❌ Failed to connect to the server!";
+                responseMessage.innerText = `❌ Error: ${error.message}`;
             } finally {
-                // Reset button state
                 submitButton.disabled = false;
                 submitButton.innerText = "Submit";
             }

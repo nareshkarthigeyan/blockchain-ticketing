@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Verifier</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        #qr-reader {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .valid {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .invalid {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        #debug {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ticket Verifier</h1>
+    <div id="qr-reader"></div>
+    <div id="result"></div>
+    <div id="debug"></div>
+
+    <script>
+        const html5QrcodeScanner = new Html5QrcodeScanner(
+            "qr-reader", 
+            { 
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0
+            }
+        );
+
+        function onScanSuccess(decodedText) {
+            const resultDiv = document.getElementById('result');
+            const debugDiv = document.getElementById('debug');
+            resultDiv.style.display = 'block';
+
+            // Debug output
+            debugDiv.innerHTML = `
+                <p><strong>Scanned QR Content:</strong> ${decodedText}</p>
+            `;
+
+            console.log('Scanned QR Code:', decodedText); // Debug log
+
+            // Verify the ticket hash
+            const serverUrl = 'http://localhost:5001';
+            fetch(`${serverUrl}/api/verify-block/${decodedText}`)
+                .then(response => {
+                    console.log('Response status:', response.status); // Debug log
+                    debugDiv.innerHTML += `<p>Response status: ${response.status}</p>`;
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Response data:', data); // Debug log
+                    debugDiv.innerHTML += `<p>Response data: ${JSON.stringify(data)}</p>`;
+                    
+                    if (data.success) {
+                        const ticket = data.block.data;
+                        resultDiv.className = 'valid';
+                        resultDiv.innerHTML = `
+                            <h2>✅ Valid Ticket</h2>
+                            <p><strong>Name:</strong> ${ticket.name}</p>
+                            <p><strong>Ticket Type:</strong> ${ticket.ticketType}</p>
+                            <p><strong>Ticket ID:</strong> ${ticket.ticketID}</p>
+                        `;
+                    } else {
+                        resultDiv.className = 'invalid';
+                        resultDiv.innerHTML = `
+                            <h2>❌ Invalid Ticket</h2>
+                            <p>${data.error}</p>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error); // Debug log
+                    debugDiv.innerHTML += `<p>Error: ${error.message}</p>`;
+                    resultDiv.className = 'invalid';
+                    resultDiv.innerHTML = `
+                        <h2>❌ Error</h2>
+                        <p>Failed to verify ticket: ${error.message}</p>
+                    `;
+                });
+        }
+
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+</body>
+</html>

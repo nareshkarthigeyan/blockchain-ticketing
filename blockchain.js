@@ -49,6 +49,7 @@ class Block {
     } while (
       this.hash.substring(0, this.difficulty) !== "0".repeat(this.difficulty)
     );
+    return this.hash;
   }
 }
 
@@ -114,8 +115,9 @@ class Blockchain {
       const latestBlock = await this.getLatestBlock();
       newBlock.index = latestBlock ? latestBlock.blockIndex + 1 : 0;
       newBlock.prevHash = latestBlock ? latestBlock.hash : "0";
-      newBlock.mineBlock();
+      const hash = newBlock.mineBlock();
       await this.addBlockToDB(newBlock);
+      return hash;
     } catch (err) {
       console.error("Error adding block to chain:", err);
     }
@@ -195,6 +197,28 @@ class Blockchain {
       );
     });
   }
+
+  async getBlockByHash(hash) {
+    return new Promise((resolve, reject) => {
+      this.db.get(
+        "SELECT * FROM blocks WHERE hash = ?",
+        [hash],
+        (err, row) => {
+          if (err) {
+            console.error("Error finding block:", err);
+            reject(err);
+          }
+          if (!row) {
+            resolve(null); // Block not found
+          } else {
+            // Parse the data field back to object
+            row.data = JSON.parse(row.data);
+            resolve(row);
+          }
+        }
+      );
+    });
+  }
 }
 
 const ticketChain = new Blockchain(3);
@@ -227,26 +251,13 @@ async function generateTicketBlock(
     );
 
     console.log(`Mining block ${newBlock.index}...`);
-    await ticketChain.addBlockToChain(newBlock);
+    const hash = await ticketChain.addBlockToChain(newBlock);
+    return hash
   } catch (err) {
     console.error("Error generating ticket block:", err);
   }
 }
 
-// (async function () {
-//   await generateTicketBlock(
-//     "Naresh",
-//     "naresh@example.com",
-//     "VIP",
-//     "123456",
-//     "9876543210",
-//     "TICKET123"
-//   );
-
-//   console.log("\nBlockchain:", JSON.stringify(ticketChain, null, 4));
-//   const valid = await ticketChain.isValid();
-//   console.log("\nBlockchain valid:", valid);
-// })();
 
 function printAllBlocks() {
   db.all("SELECT * FROM blocks ORDER BY blockIndex ASC", (err, rows) => {
@@ -270,5 +281,8 @@ function printAllBlocks() {
 
 setTimeout(printAllBlocks, 2000);
 
-module.exports = { generateTicketBlock };
+module.exports = { 
+  generateTicketBlock,
+  ticketChain // Export the blockchain instance
+};
 

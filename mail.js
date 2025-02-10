@@ -22,12 +22,18 @@ async function generateQRCode(data) {
     }
 }
 
-async function sendTicketEmail(userEmail, ticketDetails) {
+async function sendTicketEmail(userEmail, ticketDetails, hash) {
     try {
         // Generate QR code - only include essential data
-        let qrCodeDataUrl = await generateQRCode(ticketDetails.ticketID);
-        const qrdata = JSON.stringify(qrCodeDataUrl);
+        const qrdata = hash
+		console.log(qrdata);
+		console.log(hash);
 
+		const imgTag =  `<img
+						style="width: 80%; background-color: white; border: 10px solid white; border-radius: 10px"
+						src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=` + qrdata + `"
+						alt="` + qrdata + `"
+					/>`
         // Read HTML template
         let htmlTemplate = `<html>
 	<head>
@@ -77,12 +83,9 @@ async function sendTicketEmail(userEmail, ticketDetails) {
 		</table>
 		<table style="width: 100%">
 			<tr>
-				<td align="center" style="padding-top: 5%; padding-bottom: 5%; padding-left: 10%; padding-right: 10%">
-					<img
-						style="width: 80%; background-color: white; border: 10px solid white; border-radius: 10px"
-						src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data={{QR_DATA}}"
-						alt="{{QR_DATA}}"
-					/>
+				<td align="center" style="padding-top: 5%; padding-bottom: 5%; padding-left: 10%; padding-right: 10%">` +
+					imgTag +
+					`
 				</td>
 			</tr>
 		</table>
@@ -131,7 +134,7 @@ async function sendTicketEmail(userEmail, ticketDetails) {
 	</body>
 </html>`
 
-        console.log(htmlTemplate);
+        // console.log(htmlTemplate);
         console.log("balls")
         
         // Replace template variables
@@ -141,7 +144,7 @@ async function sendTicketEmail(userEmail, ticketDetails) {
             .replace('{{TicketType}}', ticketDetails.ticketType)
             .replace('{{TicketID}}', ticketDetails.ticketID)
             .replace('{{TransactionID}}', ticketDetails.transactionID)
-            .replace('{{QR_CODE}}', qrdata);
+            .replace(/{{QR_CODE}}/g, qrdata);
 
         // Email content with QR code
         const mailOptions = {

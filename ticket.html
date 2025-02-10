@@ -1,104 +1,101 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Verification</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .ticket-details {
-            margin: 20px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 5px;
-        }
-        .qr-container {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .qr-code {
-            max-width: 200px;
-            margin: 0 auto;
-        }
-        .verification-status {
-            text-align: center;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-        .valid {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .invalid {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Blockchain Ticket Verification</h1>
-        
-        <div class="ticket-details">
-            <h2>Ticket Information</h2>
-            <p><strong>Name:</strong> <span id="ticketName"></span></p>
-            <p><strong>Ticket Type:</strong> <span id="ticketType"></span></p>
-            <p><strong>Ticket ID:</strong> <span id="ticketID"></span></p>
-            <p><strong>Transaction ID:</strong> <span id="transactionID"></span></p>
-        </div>
-
-        <div class="qr-container">
-            <h3>Ticket QR Code</h3>
-            <div id="qrcode" class="qr-code"></div>
-        </div>
-
-        <div id="verificationStatus" class="verification-status"></div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
-    <script>
-        // Get ticket data from URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const ticketData = {
-            name: urlParams.get('name'),
-            ticketType: urlParams.get('ticketType'),
-            ticketID: urlParams.get('ticketID'),
-            transactionID: urlParams.get('transactionID')
-        };
-
-        // Display ticket information
-        document.getElementById('ticketName').textContent = ticketData.name || 'N/A';
-        document.getElementById('ticketType').textContent = ticketData.ticketType || 'N/A';
-        document.getElementById('ticketID').textContent = ticketData.ticketID || 'N/A';
-        document.getElementById('transactionID').textContent = ticketData.transactionID || 'N/A';
-
-        // Generate QR code
-        if (ticketData.ticketID && ticketData.transactionID) {
-            QRCode.toCanvas(document.getElementById('qrcode'), JSON.stringify(ticketData), function (error) {
-                if (error) console.error(error);
-                console.log('QR code generated!');
-            });
-
-            document.getElementById('verificationStatus').className = 'verification-status valid';
-            document.getElementById('verificationStatus').textContent = 'Valid Ticket ✓';
-        } else {
-            document.getElementById('verificationStatus').className = 'verification-status invalid';
-            document.getElementById('verificationStatus').textContent = 'Invalid Ticket ✗';
-        }
-    </script>
-</body>
-</html> 
+<html>
+	<head>
+		<meta name="color-scheme" content="light" />
+		<meta name="supported-color-schemes" content="light" />
+	</head>
+	<body
+		style="
+			background-color: black;
+			margin: 0;
+			max-width: 500px;
+			padding: 0;
+			color: white;
+			font-family: 'Courier New', monospace;
+		"
+	>
+		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td align="center">
+					<img
+						width="100%"
+						style="margin-left: auto; margin-right: auto"
+						src="https://lh7-us.googleusercontent.com/B_UxeLxGJ3YZEFpbQYO86w4TI3DCpkwGGNYFMh0Wk0x7GaL0wTV_utNVGyBjNvqcGOdmhpjCiiLwT01vJT6DKnaruglFMx8ZSs6SGzj8BzJwL5yxIuYBvjs0HJKo-K0WElQyz23jb26R1VFEFjQg1aw"
+					/>
+				</td>
+			</tr>
+		</table>
+		<table>
+			<tr align="left">
+				<td style="padding-right: 10%; padding-left: 10%; font-size: 12px">
+					Dear <span style="font-size: 16px">{{Name}}</span>,
+				</td>
+			</tr>
+			<tr>
+				<td style="padding-right: 10%; padding-left: 10%; font-size: 12px; text-align: justify">
+					<br />
+					Greetings from TEDxCITBengaluru!
+					<br />
+					<br />
+					Thank you for reserving your seat at our event, "Aether." We're thrilled to have you join us.Your registration
+					is confirmed, and attached is your e-ticket with a personalized QR code for easy entry.
+					<br />
+					<br />
+					We eagerly await your presence at the event!
+				</td>
+			</tr>
+		</table>
+		<table style="width: 100%">
+			<tr>
+				<td align="center" style="padding-top: 5%; padding-bottom: 5%; padding-left: 10%; padding-right: 10%">
+					<img
+						style="width: 80%; background-color: white; border: 10px solid white; border-radius: 10px"
+						src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data={{QR_DATA}}"
+						alt="{{QR_DATA}}"
+					/>
+				</td>
+			</tr>
+		</table>
+		<table style="padding: 5%" cellpadding="0" cellspacing="0">
+			<tr>
+				<th style="width: 50%"></th>
+				<th></th>
+			</tr>
+			<tr>
+				<td style="border-width: 2px; padding: 2.5%; border-color: white; border-style: solid">
+					Date & Time: <br />
+					May 06th 2024 <br />
+					11 AM Onwards
+				</td>
+				<td style="border-width: 2px; padding: 2.5%; border-color: white; border-style: solid">
+					Venue: <br />
+					Camridge Institute Of Technology
+				</td>
+			</tr>
+			<tr>
+				<td style="border-width: 2px; padding: 2.5%; border-color: white; border-style: solid">Name: {{Name}}</td>
+				<td style="border-width: 2px; padding: 2.5%; border-color: white; border-style: solid">TRNO: {{TRNO}}</td>
+			</tr>
+		</table>
+		<table style="width: 100%">
+			<tr>
+				<td style="padding-right: 10%; padding-left: 10%; font-size: 12px; text-align: justify">
+					For any inquiries, feel free to contact us:
+					<br />
+					Snehith Reddy: +91-79939 19979
+					<br />
+					Srinidhi G G: +91-80733 77202
+				</td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td align="center">
+					<img
+						width="100%"
+						src="https://lh7-us.googleusercontent.com/ZYFaDzTCg5bfMVrUIlHLXahToK2n_xfrkwtGTlrlcl3Zk9K3-8MFTrfeZt7kQ-nJBKUaoCC-NwalCxQdfb21_MFtvqFL6mUgc1R6z7e2p71iV_LMnVl7IIatIes5EDKHqwn0dund5F0jzoNlm_fDiGM"
+					/>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
